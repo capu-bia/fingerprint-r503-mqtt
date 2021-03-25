@@ -11,10 +11,13 @@ DynamicJsonDocument mqttMessage(MQTT_MAX_PACKET_SIZE);
 SoftwareSerial swSerial(SENSOR_TX, SENSOR_RX);
 Adafruit_Fingerprint fingerSensor = Adafruit_Fingerprint(&swSerial);
 
+String sensorMode = "reading";
+
 String lastSensorMode;
-String sensorMode;
 String lastSensorState;
 String sensorState;
+
+int touchVal;
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
@@ -110,13 +113,47 @@ void setupDevices()
     }
     else
     {
-        Serial.println("ko.\nSensor not found: check serial connection on green/yellow cables.");
+        Serial.println("KO.\nSensor not found: check serial connection on green/yellow cables.");
 
-        while (1)
-        {
-            delay(100);
-        }
+        delay(3000);
+        ESP.restart();
+        delay(5000);
     }
+
+    fingerSensor.getParameters();
+    Serial.print(F("Status : 0x"));
+    Serial.println(fingerSensor.status_reg, HEX);
+    Serial.print(F("Sys ID : 0x"));
+    Serial.println(fingerSensor.system_id, HEX);
+    Serial.print(F("Capacity: "));
+    Serial.println(fingerSensor.capacity);
+    Serial.print(F("Security level: "));
+    Serial.println(fingerSensor.security_level);
+    Serial.print(F("Device address: "));
+    Serial.println(fingerSensor.device_addr, HEX);
+    Serial.print(F("Packet len: "));
+    Serial.println(fingerSensor.packet_len);
+    Serial.print(F("Baud rate: "));
+    Serial.println(fingerSensor.baud_rate);
+
+    fingerSensor.getTemplateCount();
+
+    if (fingerSensor.templateCount == 0)
+    {
+        Serial.print("Sensor doesn't contain any fingerprint data");
+    }
+    else
+    {
+        Serial.println("Waiting for valid finger");
+        Serial.print("Sensor contains ");
+        Serial.print(fingerSensor.templateCount);
+        Serial.println(" templates");
+    }
+}
+
+void setupTouch()
+{
+    Serial.println("Touch!");
 }
 
 void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length))
@@ -132,10 +169,10 @@ void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length)
     mqttMessage["user"] = 0;
     mqttMessage["confidence"] = 0;
 
-    mqttKeep();
+    mqttConnect();
 }
 
-void mqttKeep()
+void mqttConnect()
 {
     while (!client.connected())
     {
@@ -161,8 +198,6 @@ void mqttKeep()
             delay(5000);
         }
     }
-    
-    Serial.println("Keep mqtt");
 }
 
 void saveConfig()
@@ -256,8 +291,11 @@ void readConfig()
     }
 }
 
-void mqttLoop()
+void localLoop()
 {
+    mqttConnect();
+
+    delay(200);
+
     client.loop();
-    delay(100);
 }

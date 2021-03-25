@@ -1,5 +1,6 @@
 #include "fingerprint-mqtt.h"
 #include "setup.h"
+#include "led.h"
 
 uint8_t id = 0;
 uint8_t lastId = 0;
@@ -16,13 +17,13 @@ void setup()
   saveConfig();
   mqttSetup(callback);
 
-  ledReady();
+  led(LED_READY);
 }
 
 void loop()
 {
-  mqttKeep();
-  
+  localLoop();
+
   if (sensorMode == "reading")
   {
     mqttMessage["mode"] = "reading";
@@ -53,8 +54,6 @@ void loop()
     }
     else if (result == FINGERPRINT_NOFINGER)
     {
-        Serial.println("nofing");
-
       if ((millis() - lastMQTTmsg) > MQTT_INTERVAL)
       {
         mqttMessage["match"] = false;
@@ -72,10 +71,6 @@ void loop()
       }
     }
   }
-
-  Serial.println("Loop");
-
-  mqttLoop();
 }
 
 uint8_t getFingerprintId()
@@ -92,7 +87,6 @@ uint8_t getFingerprintId()
 
   case FINGERPRINT_NOFINGER:
 
-    Serial.println("No finger detected");
     return p;
 
   case FINGERPRINT_PACKETRECIEVEERR:
@@ -158,7 +152,7 @@ uint8_t getFingerprintId()
 
     lastId = fingerSensor.fingerID;
     lastConfidenceScore = fingerSensor.confidence;
-    ledMatch();
+    led(LED_MATCH);
     return p;
   }
   else if (p == FINGERPRINT_PACKETRECIEVEERR)
@@ -170,7 +164,7 @@ uint8_t getFingerprintId()
   {
     Serial.println("Did not find a match");
     lastConfidenceScore = fingerSensor.confidence;
-    ledWrong();
+    led(LED_WRONG);
     return p;
   }
   else
@@ -204,13 +198,13 @@ uint8_t getFingerprintEnroll()
     case FINGERPRINT_OK:
 
       Serial.println("Image taken");
-      ledFinger();
+      led(LED_SNAP);
       break;
 
     case FINGERPRINT_NOFINGER:
 
       Serial.print(".");
-      ledWait();
+      led(LED_WAIT);
       break;
 
     case FINGERPRINT_PACKETRECIEVEERR:
@@ -309,13 +303,13 @@ uint8_t getFingerprintEnroll()
     case FINGERPRINT_OK:
 
       Serial.println("Image taken");
-      ledFinger();
+      led(LED_SNAP);
       break;
 
     case FINGERPRINT_NOFINGER:
 
       Serial.print(".");
-      ledWait();
+      led(LED_WAIT);
       break;
 
     case FINGERPRINT_PACKETRECIEVEERR:
@@ -453,7 +447,7 @@ uint8_t deleteFingerprint()
     mqttMessage["confidence"] = 0;
     mqttPublish();
 
-    ledWrong();
+    led(LED_WRONG);
 
     return true;
   }
@@ -558,31 +552,4 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     Serial.println();
   }
-}
-
-// mode(1-6),delay(1-255),color(1-Red/2-Blue/3-Purple),times(1-255)
-
-void ledFinger()
-{
-  fingerSensor.led_control(1, 100, 2, 1);
-}
-
-void ledMatch()
-{
-  fingerSensor.led_control(1, 150, 2, 1);
-}
-
-void ledWrong()
-{
-  fingerSensor.led_control(1, 30, 1, 2);
-}
-
-void ledReady()
-{
-  fingerSensor.led_control(2, 150, 2, 1);
-}
-
-void ledWait()
-{
-  fingerSensor.led_control(1, 15, 3, 1);
 }

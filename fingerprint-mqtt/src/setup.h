@@ -9,8 +9,9 @@
 
 #define MQTT_MAX_PACKET_SIZE 256
 #define MQTT_INTERVAL 500
-#define SENSOR_TX 12 // gren   D5
+#define SENSOR_TX 12 // gren D5
 #define SENSOR_RX 14 // yellow D6
+#define SENSOR_TOUCH 13 // blue D0
 #define CONFIG_FILE "/config.json"
 
 #include <ArduinoJson.h>
@@ -25,11 +26,12 @@ extern String lastSensorState;
 extern String sensorState;
 
 void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length));
-void mqttKeep();
-void mqttLoop();
+void mqttConnect();
+void localLoop();
 void mqttPublish();
 
 void setupDevices();
+void setupTouch();
 void setupWifi();
 
 void saveConfig();
