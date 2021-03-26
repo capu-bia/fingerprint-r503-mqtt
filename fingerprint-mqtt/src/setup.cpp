@@ -149,9 +149,12 @@ void setupDevices()
         Serial.print(fingerSensor.templateCount);
         Serial.println(" templates");
     }
+
+    //pinMode(SENSOR_TOUCH, INPUT);
+    //attachInterrupt(digitalPinToInterrupt(SENSOR_TOUCH), setupTouch, CHANGE);
 }
 
-void setupTouch()
+ICACHE_RAM_ATTR void setupTouch()
 {
     Serial.println("Touch!");
 }

@@ -11,7 +11,7 @@
 #define MQTT_INTERVAL 500
 #define SENSOR_TX 12 // gren D5
 #define SENSOR_RX 14 // yellow D6
-#define SENSOR_TOUCH 13 // blue D0
+#define SENSOR_TOUCH 16 // blue D0
 #define CONFIG_FILE "/config.json"
 
 #include <ArduinoJson.h>

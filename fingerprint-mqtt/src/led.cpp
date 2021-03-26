@@ -6,7 +6,7 @@ void led(int mode)
     switch (mode)
     {
     case LED_SNAP:
-        fingerSensor.led_control(
+        fingerSensor.LEDcontrol(
             FINGERPRINT_LED_FLASHING,
             100,
             FINGERPRINT_LED_PURPLE,
@@ -15,7 +15,7 @@ void led(int mode)
         break;
 
     case LED_MATCH:
-        fingerSensor.led_control(
+        fingerSensor.LEDcontrol(
             FINGERPRINT_LED_BREATHING,
             150,
             FINGERPRINT_LED_BLUE,
@@ -23,7 +23,7 @@ void led(int mode)
         break;
 
     case LED_WRONG:
-        fingerSensor.led_control(
+        fingerSensor.LEDcontrol(
             FINGERPRINT_LED_BREATHING,
             30,
             FINGERPRINT_LED_RED,
@@ -31,7 +31,7 @@ void led(int mode)
         break;
 
     case LED_READY:
-        fingerSensor.led_control(
+        fingerSensor.LEDcontrol(
             FINGERPRINT_LED_FLASHING,
             15,
             FINGERPRINT_LED_BLUE,
@@ -39,7 +39,7 @@ void led(int mode)
         break;
 
     case LED_WAIT:
-        fingerSensor.led_control(
+        fingerSensor.LEDcontrol(
             FINGERPRINT_LED_BREATHING,
             15,
             FINGERPRINT_LED_PURPLE,
