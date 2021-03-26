@@ -1,5 +1,6 @@
 #include "fingerprint-mqtt.h"
 #include "setup.h"
+#include "config.h"
 #include "led.h"
 
 uint8_t id = 0;

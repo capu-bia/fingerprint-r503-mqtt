@@ -12,7 +12,6 @@
 #define SENSOR_TX 12 // gren D5
 #define SENSOR_RX 14 // yellow D6
 #define SENSOR_TOUCH 16 // blue D0
-#define CONFIG_FILE "/config.json"
 
 #include <ArduinoJson.h>
 #include <Adafruit_Fingerprint.h>
@@ -25,6 +24,12 @@ extern String sensorMode;
 extern String lastSensorState;
 extern String sensorState;
 
+extern char mqttHost[32];
+extern char mqttPort[6];
+extern char mqttUsername[16];
+extern char mqttPassword[16];
+extern char gateId[32];
+
 void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length));
 void mqttConnect();
 void localLoop();
@@ -32,8 +37,3 @@ void mqttPublish();
 
 void setupDevices();
 void setupTouch();
-void setupWifi();
-
-void saveConfig();
-void saveConfigCallback();
-void readConfig();
