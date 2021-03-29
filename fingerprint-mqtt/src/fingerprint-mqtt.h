@@ -2,7 +2,5 @@
 typedef unsigned char byte;
 #include <Arduino.h>
 
-uint8_t getFingerprintId();
-uint8_t getFingerprintEnroll();
-uint8_t deleteFingerprint();
+uint8_t fingerprintReading();
 void callback(char *topic, byte *payload, unsigned int length);

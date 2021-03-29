@@ -29,7 +29,7 @@ char mqttUsername[16] = "mqtt";
 char mqttPassword[16] = "mqtt";
 char gateId[32] = "main";
 
-void mqttPublish()
+void mqttPublish(String message)
 {
     const char *state = mqttMessage["state"];
     String sensorState = String(state);

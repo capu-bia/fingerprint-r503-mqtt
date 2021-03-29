@@ -33,7 +33,7 @@ extern char gateId[32];
 void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length));
 void mqttConnect();
 void localLoop();
-void mqttPublish();
+void mqttPublish(String message);
 
 void setupDevices();
 void setupTouch();
