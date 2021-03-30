@@ -7,7 +7,7 @@
 #define IMAGE_ONE 1
 #define IMAGE_TWO 2
 
-bool processEnroll(int fingerprintId)
+bool processEnroll(uint8_t fingerprintId)
 {
     mqttPublish("Place finger...");
     Serial.printf("Waitng image for fingerId %d...\n", fingerprintId);
@@ -73,13 +73,15 @@ bool processEnroll(int fingerprintId)
     Serial.println("Fingerprint saved.");
     led(LED_READY);
 
+    delay(500);
+
     return true;
 }
 
 bool getImage()
 {
     int result;
-    int tries = 0;
+    uint8_t tries = 0;
 
     do
     {
@@ -101,7 +103,7 @@ bool getImage()
     return (result == FINGERPRINT_OK);
 }
 
-bool convertImage(int slot)
+bool convertImage(uint8_t slot)
 {
     int result = fingerSensor.image2Tz(slot);
 
@@ -118,7 +120,7 @@ bool convertImage(int slot)
 bool waitNoFinger()
 {
     int result = -1;
-    int tries = 0;
+    uint8_t tries = 0;
 
     Serial.print("Wait no finger");
     while ((result != FINGERPRINT_NOFINGER) && (++tries < 100))
@@ -131,7 +133,7 @@ bool waitNoFinger()
     return (result == FINGERPRINT_NOFINGER);
 }
 
-bool saveImage(int fingerprintId)
+bool saveImage(uint8_t fingerprintId)
 {
     int result = fingerSensor.createModel();
 
@@ -155,45 +157,34 @@ bool saveImage(int fingerprintId)
     return true;
 }
 
-uint8_t fingerprintDelete()
+boolean processDelete(uint8_t fingerprintId)
 {
-    uint8_t p = -1;
-int id = 999;
-    p = fingerSensor.deleteModel(id);
 
-    if (p == FINGERPRINT_OK)
+    mqttPublish("Deleting fingerprint model...");
+    led(LED_WAIT);
+
+    delay(500);
+
+    int result = fingerSensor.deleteModel(fingerprintId);
+
+    if (result == FINGERPRINT_OK)
     {
-        sensorMode = "deleting";
-        mqttMessage["mode"] = "deleting";
-        mqttMessage["id"] = id;
-        mqttMessage["state"] = "Deleted";
-        mqttMessage["confidence"] = 0;
-        mqttPublish("Deleted");
+        mqttPublish("Fingerprint model deleted.");
+        Serial.println("Fingerprint model deleted.");
 
-        led(LED_WRONG);
+        led(LED_READY);
+
+        delay(500);
 
         return true;
     }
-    else if (p == FINGERPRINT_PACKETRECIEVEERR)
-    {
-        Serial.println("Communication error");
-        return p;
-    }
-    else if (p == FINGERPRINT_BADLOCATION)
-    {
 
-        Serial.println("Could not delete in that location");
-        return p;
-    }
-    else if (p == FINGERPRINT_FLASHERR)
-    {
-        Serial.println("Error writing to flash");
-        return p;
-    }
-    else
-    {
-        Serial.print("Unknown error: 0x");
-        Serial.println(p, HEX);
-        return p;
-    }
+    mqttPublish("Error deleting fingerprint model!");
+    Serial.printf("Error deleting fingerprint id %d code [%x]\n\n", fingerprintId, result);
+
+    led(LED_WRONG);
+
+    delay(500);
+
+    return false;
 }

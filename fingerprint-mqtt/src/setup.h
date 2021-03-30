@@ -19,16 +19,23 @@
 extern DynamicJsonDocument mqttMessage;
 extern Adafruit_Fingerprint fingerSensor;
 
-extern String lastSensorMode;
+extern uint8_t fingerprintId;
+extern bool match;
+extern uint8_t userId;
+extern uint8_t confidence;
+extern String gateId;
 extern String sensorMode;
-extern String lastSensorState;
 extern String sensorState;
+extern String userMessage;
+
+extern String lastSensorMode;
+extern String lastSensorState;
 
 extern char mqttHost[32];
 extern char mqttPort[6];
 extern char mqttUsername[16];
 extern char mqttPassword[16];
-extern char gateId[32];
+extern char deviceGateId[32];
 
 void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length));
 void mqttConnect();

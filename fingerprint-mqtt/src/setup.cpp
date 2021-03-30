@@ -12,12 +12,16 @@ SoftwareSerial swSerial(SENSOR_TX, SENSOR_RX);
 Adafruit_Fingerprint fingerSensor = Adafruit_Fingerprint(&swSerial);
 
 String sensorMode = "reading";
+String lastSensorMode = "";
 
-String lastSensorMode;
-String lastSensorState;
-String sensorState;
+String sensorState = "waiting";
+String lastSensorState = "";
 
-int touchVal;
+bool match = false;
+
+uint8_t fingerprintId = 0;
+uint8_t userId = 0;
+uint8_t confidence = 0;
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
@@ -25,9 +29,9 @@ char mqttBuffer[MQTT_MAX_PACKET_SIZE];
 
 char mqttHost[32] = "homeassistant.local";
 char mqttPort[6] = "1883";
-char mqttUsername[16] = "mqtt";
-char mqttPassword[16] = "mqtt";
-char gateId[32] = "main";
+char mqttUsername[16] = "mqttuser";
+char mqttPassword[16] = "mqttpass";
+char deviceGateId[32] = "main";
 
 void mqttPublish(String message)
 {
@@ -122,7 +126,7 @@ void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length)
     client.setServer(mqttHost, atoi(mqttPort));
     client.setCallback(callback);
 
-    mqttMessage["gate"] = gateId;
+    mqttMessage["gate"] = deviceGateId;
     mqttMessage["mode"] = "reading";
     mqttMessage["match"] = false;
     mqttMessage["state"] = "Not matched";

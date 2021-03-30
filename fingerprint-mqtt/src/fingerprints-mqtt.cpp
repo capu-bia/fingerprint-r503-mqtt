@@ -4,12 +4,10 @@
 #include "led.h"
 #include "manage.h"
 
-uint8_t id = 0;
-uint8_t lastId = 0;
+#define RESULT_MATCH 0
+#define RESULT_WRONG 1
 
-uint8_t lastConfidenceScore = 0;
-
-unsigned long lastMQTTmsg = 0;
+#define RESULT_WAIT 2
 
 void setup()
 {
@@ -28,157 +26,85 @@ void loop()
 
   if (sensorMode == "reading")
   {
-    mqttMessage["mode"] = "reading";
-
     uint8_t result = fingerprintReading();
 
-    if (result == FINGERPRINT_OK)
+    if (result == RESULT_MATCH)
     {
-      mqttMessage["match"] = true;
-      mqttMessage["state"] = "Matched";
-      mqttMessage["id"] = lastId;
-      mqttMessage["confidence"] = lastConfidenceScore;
-      mqttPublish("Finger match");
+      match = true;
+      sensorState = "matched";
 
-      lastMQTTmsg = millis();
+      led(LED_MATCH);
+      Serial.println("Fingerprint match found.");
+      mqttPublish("Fingerprint match found.");
+
       delay(200);
     }
-    else if (result == FINGERPRINT_NOTFOUND)
+    else if (result == RESULT_WRONG)
     {
-      mqttMessage["match"] = false;
-      mqttMessage["id"] = id;
-      mqttMessage["state"] = "Not matched";
-      mqttMessage["confidence"] = lastConfidenceScore;
-      mqttPublish("Finger do not match");
+      match = false;
+      sensorState = "wrong";
 
-      lastMQTTmsg = millis();
-      delay(100);
+      led(LED_WRONG);
+      Serial.println("Unknown fingerprint detected.");
+      mqttPublish("Unknown fingerprint detected.");
+
+      delay(200);
     }
-    else if (result == FINGERPRINT_NOFINGER)
-    {
-      if ((millis() - lastMQTTmsg) > MQTT_INTERVAL)
-      {
-        mqttMessage["match"] = false;
-        mqttMessage["id"] = id;
-        mqttMessage["state"] = "Waiting";
-        mqttMessage["confidence"] = 0;
-        mqttPublish("Waiting...");
 
-        lastMQTTmsg = millis();
-      }
-
-      if ((millis() - lastMQTTmsg) < 0)
-      {
-        lastMQTTmsg = millis();
-      }
-    }
+    mqttPublish("Waiting...");
   }
 }
 
 uint8_t fingerprintReading()
 {
-  uint8_t p = fingerSensor.getImage();
 
-  switch (p)
+  uint8_t result = fingerSensor.getImage();
+
+  if (result != FINGERPRINT_OK)
   {
-
-  case FINGERPRINT_OK:
-
-    Serial.println("Image taken");
-    break;
-
-  case FINGERPRINT_NOFINGER:
-
-    return p;
-
-  case FINGERPRINT_PACKETRECIEVEERR:
-
-    Serial.println("Communication error");
-    return p;
-
-  case FINGERPRINT_IMAGEFAIL:
-
-    Serial.println("Imaging error");
-    return p;
-
-  default:
-
-    Serial.println("Unknown error");
-    return p;
+    Serial.printf("Reading error [%x]\n\n", result);
+    return RESULT_WAIT;
   }
 
-  // OK success!
+  result = fingerSensor.image2Tz();
 
-  p = fingerSensor.image2Tz();
-
-  switch (p)
+  if (result != FINGERPRINT_OK)
   {
-
-  case FINGERPRINT_OK:
-
-    Serial.println("Image converted");
-    break;
-
-  case FINGERPRINT_IMAGEMESS:
-
-    Serial.println("Image too messy");
-    return p;
-
-  case FINGERPRINT_PACKETRECIEVEERR:
-
-    Serial.println("Communication error");
-    return p;
-
-  case FINGERPRINT_FEATUREFAIL:
-
-    Serial.println("Could not find fingerprint features");
-    return p;
-
-  case FINGERPRINT_INVALIDIMAGE:
-
-    Serial.println("Could not find fingerprint features");
-    return p;
-
-  default:
-
-    Serial.println("Unknown error");
-    return p;
+    Serial.printf("Reading error [%x]\n\n", result);
+    return RESULT_WAIT;
   }
 
-  // OK converted!
-  p = fingerSensor.fingerSearch();
+  Serial.println("Fingerprint image converted");
 
-  if (p == FINGERPRINT_OK)
-  {
-    Serial.println("Found a print match!");
+  result = fingerSensor.fingerSearch();
 
-    lastId = fingerSensor.fingerID;
-    lastConfidenceScore = fingerSensor.confidence;
-    led(LED_MATCH);
-    return p;
-  }
-  else if (p == FINGERPRINT_PACKETRECIEVEERR)
+  if (result == FINGERPRINT_OK)
   {
-    Serial.println("Communication error");
-    return p;
+    Serial.println("Fingerprint found");
+    fingerprintId = fingerSensor.fingerID;
+    confidence = fingerSensor.confidence;
+
+    return RESULT_MATCH;
   }
-  else if (p == FINGERPRINT_NOTFOUND)
+
+  if (result == FINGERPRINT_NOTFOUND)
   {
-    Serial.println("Did not find a match");
-    lastConfidenceScore = fingerSensor.confidence;
-    led(LED_WRONG);
-    return p;
+    Serial.println("Fingerprint unknown");
+    fingerprintId = 0;
+    confidence = fingerSensor.confidence;
+
+    return RESULT_WRONG;
   }
-  else
-  {
-    Serial.println("Unknown error");
-    return p;
-  }
+
+  Serial.printf("Converting error [%x]\n\n", result);
+
+  return RESULT_WAIT;
 }
-
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
+
+  int id;
   if (strcmp(topic, MODE_LEARNING) == 0)
   {
     char charArray[3];
@@ -199,7 +125,7 @@ void callback(char *topic, byte *payload, unsigned int length)
       mqttMessage["id"] = id;
       mqttMessage["confidence"] = 0;
       mqttPublish("Learning");
-/*
+      /*
       while (!getFingerprintEnroll())
         ;
 */
@@ -238,7 +164,7 @@ void callback(char *topic, byte *payload, unsigned int length)
       mqttPublish("Deleting");
 
       Serial.println("Entering delete mode");
-/*
+      /*
       while (!deleteFingerprint())
         ;
 */

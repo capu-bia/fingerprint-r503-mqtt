@@ -13,7 +13,7 @@ WiFiManagerParameter customMqttHost("mqttHost", "MQTT host", mqttHost, 32);
 WiFiManagerParameter customMqttPort("mqttPort", "MQTT port", mqttPort, 6);
 WiFiManagerParameter customMqttUsername("mqttUsername", "MQTT username", mqttUsername, 16);
 WiFiManagerParameter customMqttPassword("mqttPassword", "MQTT password", mqttPassword, 16);
-WiFiManagerParameter customGateId("gateId", "Gate name", gateId, 32);
+WiFiManagerParameter customGateId("deviceGateId", "Gate name", deviceGateId, 32);
 
 void setupWifi()
 {
@@ -72,13 +72,13 @@ void saveConfig()
     strcpy(mqttPort, customMqttPort.getValue());
     strcpy(mqttUsername, customMqttUsername.getValue());
     strcpy(mqttPassword, customMqttPassword.getValue());
-    strcpy(gateId, customGateId.getValue());
+    strcpy(deviceGateId, customGateId.getValue());
 
     doc["mqttHost"] = mqttHost;
     doc["mqttPort"] = mqttPort;
     doc["mqttUsername"] = mqttUsername;
     doc["mqttPassword"] = mqttPassword;
-    doc["gateId"] = gateId;
+    doc["gateId"] = deviceGateId;
 
     if (serializeJson(doc, file) == 0)
     {
@@ -124,7 +124,7 @@ void readConfig()
                     strcpy(mqttPort, doc["mqttPort"]);
                     strcpy(mqttUsername, doc["mqttUsername"]);
                     strcpy(mqttPassword, doc["mqttPassword"]);
-                    strcpy(gateId, doc["gateId"]);
+                    strcpy(deviceGateId, doc["gateId"]);
                 }
             }
 

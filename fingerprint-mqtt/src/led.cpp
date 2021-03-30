@@ -1,7 +1,7 @@
 #include "led.h"
 #include "setup.h"
 
-void led(int mode)
+void led(uint8_t mode)
 {
     switch (mode)
     {

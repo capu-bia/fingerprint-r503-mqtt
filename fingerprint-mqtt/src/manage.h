@@ -1,12 +1,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-bool processEnroll(int fingerId);
-
-uint8_t processDelete();
-uint8_t fingerprintDelete();
+bool processEnroll(uint8_t fingerprintId);
+bool processDelete(uint8_t fingerprintId);
 
 bool getImage();
-bool saveImage(int fingerprintId);
-bool convertImage(int slot);
+bool saveImage(uint8_t fingerprintId);
+bool convertImage(uint8_t slot);
 bool waitNoFinger();

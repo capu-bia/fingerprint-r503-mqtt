@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 // Status
 #define LED_READY 0
 
@@ -9,4 +11,4 @@
 #define LED_WAIT 4
 #define LED_SNAP 5
 
-void led(int mode);
+void led(uint8_t mode);
