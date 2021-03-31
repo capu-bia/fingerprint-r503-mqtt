@@ -24,14 +24,14 @@ void loop()
 {
   localLoop();
 
-  if (sensorMode == "reading")
+  if (sensorMode == MODE_READING)
   {
     uint8_t result = fingerprintReading();
 
     if (result == RESULT_MATCH)
     {
       match = true;
-      sensorState = "matched";
+      sensorState = STATE_MATCH;
 
       led(LED_MATCH);
       Serial.println("Fingerprint match found.");
@@ -42,7 +42,7 @@ void loop()
     else if (result == RESULT_WRONG)
     {
       match = false;
-      sensorState = "wrong";
+      sensorState = STATE_WRONG;
 
       led(LED_WRONG);
       Serial.println("Unknown fingerprint detected.");
@@ -62,7 +62,7 @@ uint8_t fingerprintReading()
 
   if (result != FINGERPRINT_OK)
   {
-    Serial.printf("Reading error [%x]\n\n", result);
+    Serial.printf("Reading error [%x]\n", result);
     return RESULT_WAIT;
   }
 
@@ -70,7 +70,7 @@ uint8_t fingerprintReading()
 
   if (result != FINGERPRINT_OK)
   {
-    Serial.printf("Reading error [%x]\n\n", result);
+    Serial.printf("Reading error [%x]\n", result);
     return RESULT_WAIT;
   }
 
@@ -104,80 +104,90 @@ uint8_t fingerprintReading()
 void callback(char *topic, byte *payload, unsigned int length)
 {
 
-  int id;
-  if (strcmp(topic, MODE_LEARNING) == 0)
+  DynamicJsonDocument body(1024);
+  deserializeJson(body, payload);
+
+  uint8_t newFingerprintId = body["fingerprintId"];
+
+  if (strcmp(topic, TOPIC_LEARN) == 0)
   {
-    char charArray[3];
+    Serial.printf("Learning id %d\n", fingerprintId);
 
-    for (unsigned int i = 0; i < length; i++)
+    if (newFingerprintId > 99)
     {
-      charArray[i] = payload[i];
+      sensorMode = MODE_LEARNING;
+      sensorState = STATE_ERROR;
+      fingerprintId = newFingerprintId;
+      match = false;
+      mqttPublish("Invalid fingerprintId (0-99)");
+
+      delay(500);
+
+      sensorMode = MODE_READING;
+      sensorState = STATE_WAIT;
+      fingerprintId = 0;
+      mqttPublish("Waiting...");
+
+      return;
     }
 
-    id = atoi(charArray);
+    sensorMode = MODE_LEARNING;
+    sensorState = STATE_WAIT;
+    fingerprintId = newFingerprintId;
 
-    if (id > 0 && id < 128)
-    {
-      Serial.println("Entering Learning mode");
+    mqttPublish("Start learning...");
 
-      sensorMode = "learning";
-      mqttMessage["mode"] = "learning";
-      mqttMessage["id"] = id;
-      mqttMessage["confidence"] = 0;
-      mqttPublish("Learning");
-      /*
-      while (!getFingerprintEnroll())
-        ;
-*/
-      Serial.println("Exiting Learning mode");
+    processEnroll(newFingerprintId);
 
-      sensorMode = "reading";
-      mqttMessage["mode"] = "reading";
+    Serial.println("Exit learning...");
 
-      id = 0;
-    }
-    else
-    {
-      Serial.println("Invalid Id");
-    }
+    sensorMode = MODE_READING;
+    sensorState = STATE_WAIT;
+    fingerprintId = 0;
+    match = false;
+    mqttPublish("Waiting...");
 
-    Serial.println();
+    return;
   }
 
-  if (strcmp(topic, MODE_DELETE) == 0)
+  if (strcmp(topic, TOPIC_DELETE) == 0)
   {
-    char charArray[3];
+    Serial.printf("Deleting id %d\n", fingerprintId);
 
-    for (unsigned int i = 0; i < length; i++)
+    if (newFingerprintId > 99)
     {
-      charArray[i] = payload[i];
+      sensorMode = MODE_DELETING;
+      sensorState = STATE_ERROR;
+      fingerprintId = newFingerprintId;
+      match = false;
+      mqttPublish("Invalid fingerprintId (0-99)");
+
+      delay(500);
+
+      sensorMode = MODE_READING;
+      sensorState = STATE_WAIT;
+      fingerprintId = 0;
+      mqttPublish("Waiting...");
+
+      return;
     }
 
-    id = atoi(charArray);
+    sensorMode = MODE_DELETING;
+    sensorState = STATE_WAIT;
+    fingerprintId = newFingerprintId;
 
-    if (id > 0 && id < 128)
-    {
-      sensorMode = "deleting";
-      mqttMessage["mode"] = "deleting";
-      mqttMessage["id"] = id;
-      mqttMessage["confidence"] = 0;
-      mqttPublish("Deleting");
+    mqttPublish("Start deleting...");
 
-      Serial.println("Entering delete mode");
-      /*
-      while (!deleteFingerprint())
-        ;
-*/
-      Serial.println("Exiting delete mode");
+    processDelete(newFingerprintId);
 
-      delay(2000);
+    Serial.println("Exit deleting...");
 
-      sensorMode = "reading";
-      mqttMessage["mode"] = "reading";
+    sensorMode = MODE_READING;
+    sensorState = STATE_WAIT;
+    fingerprintId = 0;
+    match = false;
+    mqttPublish("Waiting...");
 
-      id = 0;
-    }
-
-    Serial.println();
+    return;
   }
 }

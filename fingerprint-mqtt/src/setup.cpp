@@ -49,7 +49,7 @@ void mqttPublish(String message)
         lastSensorState = sensorState;
 
         size_t mqttMessageSize = serializeJson(mqttMessage, mqttBuffer);
-        client.publish(STATE_TOPIC, mqttBuffer, mqttMessageSize);
+        client.publish(TOPIC_STATUS, mqttBuffer, mqttMessageSize);
         Serial.println(mqttBuffer);
     }
 }
@@ -145,14 +145,14 @@ void mqttConnect()
         Serial.print(mqttHost);
         Serial.print("...");
 
-        if (client.connect(HOSTNAME, mqttUsername, mqttPassword, AVAILABILITY_TOPIC, 1, true, "offline"))
+        if (client.connect(HOSTNAME, mqttUsername, mqttPassword, TOPIC_AVAILABLE, 1, true, "offline"))
         {
             Serial.println("connected");
 
-            client.publish(AVAILABILITY_TOPIC, "online");
-            client.subscribe(MODE_LEARNING);
-            client.subscribe(MODE_READING);
-            client.subscribe(MODE_DELETE);
+            client.publish(TOPIC_AVAILABLE, "online");
+            client.subscribe(TOPIC_LEARN);
+            client.subscribe(TOPIC_READ);
+            client.subscribe(TOPIC_DELETE);
         }
         else
         {

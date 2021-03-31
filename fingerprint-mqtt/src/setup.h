@@ -1,11 +1,21 @@
 #define SSID_FOR_SETUP "Fingerprint-Setup"
 #define HOSTNAME "fingerprint-mqtt"
 
-#define STATE_TOPIC "/fingerprint/status"
-#define MODE_LEARNING "/fingerprint/learn"
-#define MODE_READING "/fingerprint/read"
-#define MODE_DELETE "/fingerprint/delete"
-#define AVAILABILITY_TOPIC "/fingerprint/available"
+#define TOPIC_STATUS "/fingerprint/status"
+#define TOPIC_LEARN "/fingerprint/learn"
+#define TOPIC_READ "/fingerprint/read"
+#define TOPIC_DELETE "/fingerprint/delete"
+#define TOPIC_AVAILABLE "/fingerprint/available"
+
+#define MODE_READING "reading"
+#define MODE_LEARNING "learning"
+#define MODE_DELETING "deleting"
+
+#define STATE_OK "ok"
+#define STATE_ERROR "error"
+#define STATE_WRONG "wrong"
+#define STATE_MATCH "match"
+#define STATE_WAIT "wait"
 
 #define MQTT_MAX_PACKET_SIZE 256
 #define MQTT_INTERVAL 500
