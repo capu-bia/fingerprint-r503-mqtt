@@ -7,10 +7,10 @@
 #include <DNSServer.h>
 #include "Adafruit_Fingerprint.h"
 
-DynamicJsonDocument mqttMessage(MQTT_MAX_PACKET_SIZE);
 SoftwareSerial swSerial(SENSOR_TX, SENSOR_RX);
 Adafruit_Fingerprint fingerSensor = Adafruit_Fingerprint(&swSerial);
 
+String lastMessage = "";
 String sensorMode = "reading";
 String lastSensorMode = "";
 
@@ -33,20 +33,39 @@ char mqttUsername[16] = "mqttuser";
 char mqttPassword[16] = "mqttpass";
 char deviceGateId[32] = "main";
 
+void resetMessage()
+{
+    sensorState = STATE_WAIT;
+    sensorMode = MODE_READING;
+    match = false;
+    fingerprintId = 0;
+    confidence = 0;
+}
+
 void mqttPublish(String message)
 {
-    const char *state = mqttMessage["state"];
-    String sensorState = String(state);
-
-    int id = mqttMessage["id"];
-    mqttMessage["user"] = id / 10;
-
-    if ((sensorMode != lastSensorMode) || (sensorState != lastSensorState))
+    if ((message != lastMessage) ||
+        (sensorMode != lastSensorMode) ||
+        (sensorState != lastSensorState))
     {
-        Serial.println("Publishing state... mode: " + sensorMode + " state: " + sensorState);
 
+        lastMessage = message;
         lastSensorMode = sensorMode;
         lastSensorState = sensorState;
+
+        DynamicJsonDocument mqttMessage(MQTT_MAX_PACKET_SIZE);
+
+        mqttMessage["message"] = message;
+        mqttMessage["state"] = sensorState;
+        mqttMessage["mode"] = sensorMode;
+        mqttMessage["match"] = match;
+        mqttMessage["fingerprintId"] = fingerprintId;
+        mqttMessage["userId"] = fingerprintId / 10;
+        mqttMessage["confidence"] = confidence;
+        mqttMessage["gate"] = deviceGateId;
+
+        Serial.print("Message: ");
+        Serial.println(message);
 
         size_t mqttMessageSize = serializeJson(mqttMessage, mqttBuffer);
         client.publish(TOPIC_STATUS, mqttBuffer, mqttMessageSize);
@@ -125,14 +144,6 @@ void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length)
 {
     client.setServer(mqttHost, atoi(mqttPort));
     client.setCallback(callback);
-
-    mqttMessage["gate"] = deviceGateId;
-    mqttMessage["mode"] = "reading";
-    mqttMessage["match"] = false;
-    mqttMessage["state"] = "Not matched";
-    mqttMessage["id"] = 0;
-    mqttMessage["user"] = 0;
-    mqttMessage["confidence"] = 0;
 
     mqttConnect();
 }

@@ -9,18 +9,22 @@
 
 bool processEnroll(uint8_t fingerprintId)
 {
+    delay(1000);
+
     mqttPublish("Place finger...");
-    Serial.printf("Waitng image for fingerId %d...\n", fingerprintId);
+    Serial.printf("Waiting image for fingerprintId %d...\n", fingerprintId);
     led(LED_WAIT);
 
     if (!getImage())
     {
         mqttPublish("Error reading finger. Please retry.");
         Serial.println("Error reading finger. Please retry.");
+        led(LED_WRONG);
         return false;
     }
 
     mqttPublish("Remove finger...");
+    delay(1000);
     Serial.println("Got image");
     led(LED_SNAP);
 
@@ -28,6 +32,7 @@ bool processEnroll(uint8_t fingerprintId)
     {
         mqttPublish("Error processing finger. Please retry.");
         Serial.println("Error converting image. Please retry.");
+        led(LED_WRONG);
         return false;
     }
 
@@ -37,10 +42,12 @@ bool processEnroll(uint8_t fingerprintId)
     {
         mqttPublish("Error waiting no finger. Please retry.");
         Serial.println("Error waiting no finger. Please retry.");
+        led(LED_WRONG);
         return false;
     }
 
     mqttPublish("Place same finger again...");
+    delay(1000);
     Serial.printf("Waiting image for same fingerId %d...\n", fingerprintId);
     led(LED_WAIT);
 
@@ -48,10 +55,12 @@ bool processEnroll(uint8_t fingerprintId)
     {
         mqttPublish("Error reading confirm finger. Please retry.");
         Serial.println("Error reading confirm finger. Please retry.");
+        led(LED_WRONG);
         return false;
     }
 
     mqttPublish("Remove finger...");
+    delay(1000);
     Serial.println("Got image");
     led(LED_SNAP);
 
@@ -59,6 +68,7 @@ bool processEnroll(uint8_t fingerprintId)
     {
         mqttPublish("Error processing confirm finger. Please retry.");
         Serial.println("Converting confirm image failed. Please retry.");
+        led(LED_WRONG);
         return false;
     }
 
@@ -66,10 +76,12 @@ bool processEnroll(uint8_t fingerprintId)
     {
         mqttPublish("Finger mismatch. Please retry.");
         Serial.println("Confirm image failed. Please retry.");
+        led(LED_WRONG);
         return false;
     }
 
     mqttPublish("Fingerprint saved.");
+    delay(1000);
     Serial.println("Fingerprint saved.");
     led(LED_READY);
 
@@ -87,18 +99,14 @@ bool getImage()
     {
         result = fingerSensor.getImage();
 
-        if (result == FINGERPRINT_NOFINGER)
+        if (result != FINGERPRINT_OK)
         {
             Serial.print(".");
-            break;
-        }
-        else
-        {
-            Serial.printf("Image scan fail [%d]\n", result);
-            break;
+            led(LED_WAIT);
+            delay(100);
         }
 
-    } while ((result != FINGERPRINT_OK) || ++tries < 10);
+    } while ((result != FINGERPRINT_OK) && ++tries < 10000);
 
     return (result == FINGERPRINT_OK);
 }
@@ -163,7 +171,7 @@ boolean processDelete(uint8_t fingerprintId)
     mqttPublish("Deleting fingerprint model...");
     led(LED_WAIT);
 
-    delay(500);
+    delay(1000);
 
     int result = fingerSensor.deleteModel(fingerprintId);
 
@@ -174,7 +182,7 @@ boolean processDelete(uint8_t fingerprintId)
 
         led(LED_READY);
 
-        delay(500);
+        delay(1000);
 
         return true;
     }
@@ -184,7 +192,7 @@ boolean processDelete(uint8_t fingerprintId)
 
     led(LED_WRONG);
 
-    delay(500);
+    delay(1000);
 
     return false;
 }

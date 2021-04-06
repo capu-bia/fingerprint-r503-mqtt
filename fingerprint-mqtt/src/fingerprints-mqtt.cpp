@@ -26,6 +26,9 @@ void loop()
 
   if (sensorMode == MODE_READING)
   {
+    resetMessage();
+    mqttPublish("Waiting...");
+
     uint8_t result = fingerprintReading();
 
     if (result == RESULT_MATCH)
@@ -50,19 +53,16 @@ void loop()
 
       delay(200);
     }
-
-    mqttPublish("Waiting...");
   }
 }
 
 uint8_t fingerprintReading()
 {
-
   uint8_t result = fingerSensor.getImage();
 
   if (result != FINGERPRINT_OK)
   {
-    Serial.printf("Reading error [%x]\n", result);
+    //Serial.printf("Reading error [%x]\n", result);
     return RESULT_WAIT;
   }
 
@@ -113,20 +113,22 @@ void callback(char *topic, byte *payload, unsigned int length)
   {
     Serial.printf("Learning id %d\n", fingerprintId);
 
-    if (newFingerprintId > 99)
+    if (newFingerprintId < 10 || newFingerprintId > 200)
     {
       sensorMode = MODE_LEARNING;
       sensorState = STATE_ERROR;
       fingerprintId = newFingerprintId;
       match = false;
-      mqttPublish("Invalid fingerprintId (0-99)");
+      mqttPublish("Invalid fingerprintId (10-200 for userId 1-20)");
 
-      delay(500);
+      delay(1000);
 
       sensorMode = MODE_READING;
       sensorState = STATE_WAIT;
       fingerprintId = 0;
       mqttPublish("Waiting...");
+
+      delay(1000);
 
       return;
     }
@@ -139,13 +141,10 @@ void callback(char *topic, byte *payload, unsigned int length)
 
     processEnroll(newFingerprintId);
 
-    Serial.println("Exit learning...");
+    delay(1000);
 
+    Serial.println("Exit learning...");
     sensorMode = MODE_READING;
-    sensorState = STATE_WAIT;
-    fingerprintId = 0;
-    match = false;
-    mqttPublish("Waiting...");
 
     return;
   }
@@ -154,20 +153,22 @@ void callback(char *topic, byte *payload, unsigned int length)
   {
     Serial.printf("Deleting id %d\n", fingerprintId);
 
-    if (newFingerprintId > 99)
+    if (newFingerprintId < 10 || newFingerprintId > 200)
     {
       sensorMode = MODE_DELETING;
       sensorState = STATE_ERROR;
       fingerprintId = newFingerprintId;
       match = false;
-      mqttPublish("Invalid fingerprintId (0-99)");
+      mqttPublish("Invalid fingerprintId (10-200 for userId 1-20)");
 
-      delay(500);
+      delay(1000);
 
       sensorMode = MODE_READING;
       sensorState = STATE_WAIT;
       fingerprintId = 0;
       mqttPublish("Waiting...");
+
+      delay(1000);
 
       return;
     }
@@ -177,16 +178,11 @@ void callback(char *topic, byte *payload, unsigned int length)
     fingerprintId = newFingerprintId;
 
     mqttPublish("Start deleting...");
-
+    delay(1000);
     processDelete(newFingerprintId);
 
     Serial.println("Exit deleting...");
-
     sensorMode = MODE_READING;
-    sensorState = STATE_WAIT;
-    fingerprintId = 0;
-    match = false;
-    mqttPublish("Waiting...");
 
     return;
   }

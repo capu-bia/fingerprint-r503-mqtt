@@ -26,14 +26,12 @@
 #include <ArduinoJson.h>
 #include <Adafruit_Fingerprint.h>
 
-extern DynamicJsonDocument mqttMessage;
 extern Adafruit_Fingerprint fingerSensor;
 
 extern uint8_t fingerprintId;
 extern bool match;
 extern uint8_t userId;
 extern uint8_t confidence;
-extern String gateId;
 extern String sensorMode;
 extern String sensorState;
 extern String userMessage;
@@ -51,6 +49,7 @@ void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length)
 void mqttConnect();
 void localLoop();
 void mqttPublish(String message);
+void resetMessage();
 
 void setupDevices();
 void setupTouch();
