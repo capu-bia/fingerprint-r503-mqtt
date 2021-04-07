@@ -5,8 +5,6 @@
 #include "config.h"
 #include "setup.h"
 
-#define CONFIG_FILE "/config.json"
-
 bool shouldSaveConfig = false;
 
 WiFiManagerParameter customMqttHost("mqttHost", "MQTT host", mqttHost, 32);
@@ -20,7 +18,6 @@ void setupWifi()
     Serial.println("Configuration check...");
 
     WiFiManager wifiManager;
-    //wifiManager.resetSettings();
 
     wifiManager.addParameter(&customMqttHost);
     wifiManager.addParameter(&customMqttPort);

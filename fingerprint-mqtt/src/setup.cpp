@@ -1,3 +1,5 @@
+#define ESP_DRD_USE_LITTLEFS true
+
 #include "setup.h"
 #include "config.h"
 #include <PubSubClient.h>
@@ -5,7 +7,12 @@
 #include <WiFiManager.h>
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
+#include <ESP_DoubleResetDetector.h>
+#include <LittleFS.h>
 #include "Adafruit_Fingerprint.h"
+
+#define DRD_TIMEOUT 10
+#define DRD_ADDRESS 0
 
 SoftwareSerial swSerial(SENSOR_TX, SENSOR_RX);
 Adafruit_Fingerprint fingerSensor = Adafruit_Fingerprint(&swSerial);
@@ -32,6 +39,8 @@ char mqttPort[6] = "1883";
 char mqttUsername[16] = "mqttuser";
 char mqttPassword[16] = "mqttpass";
 char deviceGateId[32] = "main";
+
+DoubleResetDetector resetDetector(DRD_TIMEOUT, DRD_ADDRESS);
 
 void resetMessage()
 {
@@ -82,6 +91,24 @@ void setupDevices()
     delay(100);
 
     Serial.println("\n\nWelcome to Fingerprint-MQTT sensor");
+
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    if (resetDetector.detectDoubleReset())
+    {
+        Serial.println("RESET DEVICE");
+
+        digitalWrite(LED_BUILTIN, LOW);
+        LittleFS.remove(CONFIG_FILE);
+        WiFiManager wifiManager;
+        wifiManager.resetSettings();
+        ESP.restart();
+    }
+    else
+    {
+        Serial.println("Device reset not detected.");
+        digitalWrite(LED_BUILTIN, HIGH);
+    }
 
     fingerSensor.begin(57600);
     delay(5);
@@ -178,6 +205,8 @@ void mqttConnect()
 
 void localLoop()
 {
+    resetDetector.loop();
+
     mqttConnect();
 
     delay(200);
