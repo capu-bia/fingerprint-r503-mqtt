@@ -6,7 +6,7 @@ This a firmware for arduino like devices with integrated WIFI adapter, based on 
 
 Connect one of these board to a [R503 Fingerprint capacitive sensor](https://amzn.to/31WWdd6) and you can send commands via MQTT protocol to an IoT hub.
 
-This project is made with Home Assistant integration in mind, but can be used to send data to any MQTT broker.
+This project is made with Home Assistant integration in mind, but it can be used to send data to any MQTT broker.
 
 ## Features
 * Simple configuration via WIFI
