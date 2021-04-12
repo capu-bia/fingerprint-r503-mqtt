@@ -17,6 +17,9 @@
 SoftwareSerial swSerial(SENSOR_TX, SENSOR_RX);
 Adafruit_Fingerprint fingerSensor = Adafruit_Fingerprint(&swSerial);
 
+char learnTopic[32];
+char deleteTopic[32];
+
 String lastMessage = "";
 String sensorMode = "reading";
 String lastSensorMode = "";
@@ -57,6 +60,13 @@ void mqttPublish(String message)
         (sensorMode != lastSensorMode) ||
         (sensorState != lastSensorState))
     {
+        String topic;
+
+        topic = "/fingerprint/";
+        topic.concat(deviceGateId);
+        topic.concat("/status");
+        char statusTopic[topic.length() + 1];
+        topic.toCharArray(statusTopic, topic.length() + 1);
 
         lastMessage = message;
         lastSensorMode = sensorMode;
@@ -77,7 +87,7 @@ void mqttPublish(String message)
         Serial.println(message);
 
         size_t mqttMessageSize = serializeJson(mqttMessage, mqttBuffer);
-        client.publish(TOPIC_STATUS, mqttBuffer, mqttMessageSize);
+        client.publish(statusTopic, mqttBuffer, mqttMessageSize);
         Serial.println(mqttBuffer);
     }
 }
@@ -179,18 +189,44 @@ void mqttConnect()
 {
     while (!client.connected())
     {
+
+        String topic;
+
+        topic = "/fingerprint/";
+        topic.concat(deviceGateId);
+        topic.concat("/delete");
+        deleteTopic[topic.length() + 1];
+        topic.toCharArray(deleteTopic, topic.length() + 1);
+        Serial.print("Delete topic: ");
+        Serial.println(deleteTopic);
+
+        topic = "/fingerprint/";
+        topic.concat(deviceGateId);
+        topic.concat("/learn");
+        learnTopic[topic.length() + 1];
+        topic.toCharArray(learnTopic, topic.length() + 1);
+        Serial.print("Learn topic: ");
+        Serial.println(learnTopic);
+
+        topic = "/fingerprint/";
+        topic.concat(deviceGateId);
+        topic.concat("/available");
+        char availableTopic[topic.length() + 1];
+        topic.toCharArray(availableTopic, topic.length() + 1);
+        Serial.print("Availability topic: ");
+        Serial.println(availableTopic);
+
         Serial.print("Connecting to MQTT ");
         Serial.print(mqttHost);
         Serial.print("...");
 
-        if (client.connect(HOSTNAME, mqttUsername, mqttPassword, TOPIC_AVAILABLE, 1, true, "offline"))
+        if (client.connect(HOSTNAME, mqttUsername, mqttPassword, availableTopic, 1, true, "offline"))
         {
             Serial.println("connected");
 
-            client.publish(TOPIC_AVAILABLE, "online");
-            client.subscribe(TOPIC_LEARN);
-            client.subscribe(TOPIC_READ);
-            client.subscribe(TOPIC_DELETE);
+            client.publish(availableTopic, "online");
+            client.subscribe(learnTopic);
+            client.subscribe(deleteTopic);
         }
         else
         {

@@ -109,7 +109,7 @@ void callback(char *topic, byte *payload, unsigned int length)
 
   uint8_t newFingerprintId = body["fingerprintId"];
 
-  if (strcmp(topic, TOPIC_LEARN) == 0)
+  if (strcmp(topic, learnTopic) == 0)
   {
     Serial.printf("Learning id %d\n", fingerprintId);
 
@@ -149,7 +149,7 @@ void callback(char *topic, byte *payload, unsigned int length)
     return;
   }
 
-  if (strcmp(topic, TOPIC_DELETE) == 0)
+  if (strcmp(topic, deleteTopic) == 0)
   {
     Serial.printf("Deleting id %d\n", fingerprintId);
 

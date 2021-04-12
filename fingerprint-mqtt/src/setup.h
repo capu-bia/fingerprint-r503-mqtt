@@ -1,12 +1,6 @@
 #define SSID_FOR_SETUP "Fingerprint-Setup"
 #define HOSTNAME "fingerprint-mqtt"
 
-#define TOPIC_STATUS "/fingerprint/status"
-#define TOPIC_LEARN "/fingerprint/learn"
-#define TOPIC_READ "/fingerprint/read"
-#define TOPIC_DELETE "/fingerprint/delete"
-#define TOPIC_AVAILABLE "/fingerprint/available"
-
 #define MODE_READING "reading"
 #define MODE_LEARNING "learning"
 #define MODE_DELETING "deleting"
@@ -25,6 +19,9 @@
 
 #include <ArduinoJson.h>
 #include <Adafruit_Fingerprint.h>
+
+extern char learnTopic[];
+extern char deleteTopic[];
 
 extern Adafruit_Fingerprint fingerSensor;
 
