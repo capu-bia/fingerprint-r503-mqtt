@@ -6,7 +6,7 @@ This a firmware for arduino like devices with integrated WIFI adapter, based on 
 
 Connect one of these board to a [R503 Fingerprint capacitive sensor](https://amzn.to/31WWdd6) and you can send commands via MQTT protocol to an IoT hub.
 
-This project is made with Home Assistant integration in mind, but it can be used to send data to any MQTT broker.
+This project is made with Home Assistant integration in mind, but it can be used to only interact with any MQTT broker.
 
 ## Features
 * Simple configuration via WIFI
@@ -16,6 +16,12 @@ This project is made with Home Assistant integration in mind, but it can be used
 * Led color code feedback
 * Led signalling via MQTT
 
+Home Assistant can use messages to enable automations and trigger things like:
+
+* Open a door using electric locks
+* Enable/disable alarm system using different fingerprint
+* Enable/disable access based on user and/or time
+* Activate notificatons on unknown fingerprint
 
 ## What do you need?
 
@@ -27,7 +33,30 @@ This project is made with Home Assistant integration in mind, but it can be used
 
 ### Software
 
-## Connections
+Interaction will be done sending/receiving MQTT messages to a borker. Most used broker is called Mosquitto and can be installed as Home Assistant integration.
+
+## How to
+
+### Connections
 <img src="doc/connections.jpg" width="650">
 
+* Red cable on 3.3 volt
+* Black cable on ground
+* Green cable on pin D5
+* Yellow cable on pin D6
 
+The other 2 sensor cables can be left unused.
+
+### Flash
+
+This project is not made using standard Arduino IDE. It's a PlatformIO project.
+
+Connect the Wemos to a usb port and:
+
+Linux (and maybe Mac):
+
+type `$ ./install_into_usb_connected_wemos_d1.sh` (python3 and curl are needed)
+
+Windows:
+
+I don't know. Follow PlatformIO docs to flash under Windows machines.
