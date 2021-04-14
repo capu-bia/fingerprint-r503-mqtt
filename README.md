@@ -19,7 +19,7 @@ This project is made with Home Assistant integration in mind, but it can be used
 Home Assistant can use messages to enable automations and trigger things like:
 
 * Open a door using electric locks
-* Enable/disable alarm system using different fingerprint
+* Enable/disable alarm system using different fingerprints
 * Enable/disable access based on user and/or time
 * Activate notificatons on unknown fingerprint
 
@@ -53,10 +53,9 @@ This project is not made using standard Arduino IDE. It's a PlatformIO project.
 
 Connect the Wemos to a usb port and:
 
-Linux (and maybe Mac):
+* Linux (and maybe Mac): type `$ ./install_into_usb_connected_wemos_d1.sh` (python3 and curl are needed)
+* Windows: I don't know. Follow PlatformIO docs to flash under Windows machines.
 
-type `$ ./install_into_usb_connected_wemos_d1.sh` (python3 and curl are needed)
+### Configure
+After flash and reboot, when no configuration is found the Wemos will tun on a WiFi netowrk called "Fingerprint-Setup". Use a mobile phone or PC to connect to that WiFi network a configuration page will popup:
 
-Windows:
-
-I don't know. Follow PlatformIO docs to flash under Windows machines.
