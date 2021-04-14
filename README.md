@@ -60,8 +60,8 @@ Connect the Wemos to a usb port and:
 
 After flash and reboot, when no configuration is found the Wemos will tun on a WiFi netowrk called "Fingerprint-Setup". Use a mobile phone or PC to connect to that WiFi network a configuration page will popup:
 
-<img src="doc/wifi-ap.png" width="650">
-<img src="doc/wifi-home.png" width="650">
-<img src="doc/wifi-config.png" width="650">
+<img src="doc/wifi-ap.png" width="350">
+<img src="doc/wifi-home.png" width="350">
+<img src="doc/wifi-config.png" width="350">
 
 
