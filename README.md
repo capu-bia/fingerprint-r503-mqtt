@@ -58,10 +58,39 @@ Connect the Wemos to a usb port and:
 
 ### Configure
 
-After flash and reboot, when no configuration is found the Wemos will tun on a WiFi netowrk called "Fingerprint-Setup". Use a mobile phone or PC to connect to that WiFi network a configuration page will popup:
+After flash and reboot, when no configuration is found the Wemos will tun on a WiFi netowrk called "Fingerprint-Setup":
 
 <img src="doc/wifi-ap.png" width="350">
+
+Use a mobile phone or PC to connect to that WiFi network a configuration page will popup:
+
 <img src="doc/wifi-home.png" width="350">
+
+Fill in all required fields:
+
+* SSID name of your WiFi network
+* WiFi password
+* MQTT host: broker hostname or IP (use Home Assistant address if you are using it's Mosquitto add-on)
+* MQTT port: broker port (usually 1883)
+* MQTT Broker username (configure an user in Mosquitto or let it be got from Home Assistant users)
+* MQTT Broker password (the relative password)
+* Gate name: the name of *this* sensor (to distinguish from other devices on the same broker)
+
 <img src="doc/wifi-config.png" width="350">
 
+After save, Wemos will reboot and try to connect to WiFi network. On successful, it will flash blue led on sensor.
+
+### Reset
+
+If you mistyped some data or you want to reset device, do:
+
+* tun on device
+* wait 10 seconds
+* press the reset button
+* wait 5 seconds
+* press again reset button
+
+Device will reboot in config mode and Fingerprint-Setup WiFi network will come back again.
+
+NB: reset will *NOT* reset any registered fingerprints on the sensor.
 
