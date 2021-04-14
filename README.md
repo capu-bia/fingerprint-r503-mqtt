@@ -58,11 +58,11 @@ Connect the Wemos to a usb port and:
 
 ### Configure
 
-After flash and reboot, when no configuration is found the Wemos will tun on a WiFi netowrk called "Fingerprint-Setup":
+After flash and reboot, when no configuration is found the Wemos will tun on a WiFi netowork called "Fingerprint-Setup":
 
 <img src="doc/wifi-ap.png" width="350">
 
-Use a mobile phone or PC to connect to that WiFi network a configuration page will popup:
+Use a mobile phone or PC to connect to that WiFi network. A configuration page will popup:
 
 <img src="doc/wifi-home.png" width="350">
 
@@ -72,13 +72,13 @@ Fill in all required fields:
 * WiFi password
 * MQTT host: broker hostname or IP (use Home Assistant address if you are using it's Mosquitto add-on)
 * MQTT port: broker port (usually 1883)
-* MQTT Broker username (configure an user in Mosquitto or let it be got from Home Assistant users)
-* MQTT Broker password (the relative password)
+* MQTT username (configure an user in Mosquitto or let it be got from Home Assistant users)
+* MQTT password (the password)
 * Gate name: the name of *this* sensor (to distinguish from other devices on the same broker)
 
 <img src="doc/wifi-config.png" width="350">
 
-After save, Wemos will reboot and try to connect to WiFi network. On successful, it will flash blue led on sensor.
+After saving, Wemos will reboot and will try to connect to WiFi network. On successful, it will flash blue led on sensor.
 
 ### Reset
 
