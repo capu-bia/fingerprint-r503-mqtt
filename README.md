@@ -181,3 +181,32 @@ State field can be:
 * match: a recognized fingerprint has been detected
 * wait: fingerprint sensor is waiting for a finger
 
+Example, a matching message (slow blue led feedback):
+
+```
+{
+    "message": "Fingerprint match found.",
+    "state": "match",
+    "mode": "reading",
+    "match": true,
+    "fingerprintId": 10,
+    "userId": 1,
+    "confidence": 98,
+    "gate": "main"
+}
+```
+
+A fingerprint has been detected but not recognized. An unknow hand to the sensor (red flashing led feedback):
+
+```
+{
+    "message": "Unknown fingerprint detected.",
+    "state": "wrong",
+    "mode": "reading",
+    "match": false,
+    "fingerprintId": 0,
+    "userId": 0,
+    "confidence": 8,
+    "gate": "main"
+}
+```
