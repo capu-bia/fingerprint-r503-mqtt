@@ -58,7 +58,7 @@ Connect the Wemos to a usb port and:
 
 ### Configure
 
-After flash and reboot, when no configuration is found the Wemos will tun on a WiFi netowork called "Fingerprint-Setup":
+After flash and reboot, when no configuration is found the Wemos will tun on a WiFi network called "Fingerprint-Setup":
 
 <img src="doc/wifi-ap.png" width="350">
 
@@ -75,6 +75,8 @@ Fill in all required fields:
 * MQTT username (configure an user in Mosquitto or let it be got from Home Assistant users)
 * MQTT password (the password)
 * Gate name: the name of *this* sensor (to distinguish from other devices on the same broker)
+
+NB: do NOT use any special chars in the gate name field: only letters and numbers, no spaces or other things.
 
 <img src="doc/wifi-config.png" width="350">
 
@@ -93,4 +95,24 @@ If you mistyped some data or you want to reset device, do:
 Device will reboot in config mode and Fingerprint-Setup WiFi network will come back again.
 
 NB: reset will *NOT* reset any registered fingerprints on the sensor.
+
+## Integration
+
+Everything will be controlled sending and receiving MQTT messages. If you are using Home Assistant you can both send and receive messages in
+
+* Configuration -> Integration -> MQTT - CONFIGURE *
+
+Then you can set topic to send to json messages, and topic to listen to for incoming messages.
+
+Topics must include the given *gate* name, following this table:
+
+| Topic                      | Direction | Purpose                                     |
+----------------------------------------------------------------------------------------
+| /fingerprint/[gate]/status | incoming  | Current sensor status and messages          |
+| /fingerprint/[gate]/learn  | outgoing  | Start the learning new fingerprint process  |
+| /fingerprint/[gate]/delete | outgoing  | Delete a previous learned fingerprint       |
+
+
+<img src="doc/ha-mqtt.png" width="350">
+
 
