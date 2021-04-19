@@ -109,12 +109,75 @@ Topics must include the given *gate* name, following this table:
 
 | Topic                           | Direction | Purpose                                     |
 |---------------------------------|-----------|---------------------------------------------|
-| /fingerprint/[gate]/**status**  | incoming  | Current sensor status and messages          |
 | /fingerprint/[gate]/**learn**   | outgoing  | Start the learning new fingerprint process  |
 | /fingerprint/[gate]/**delete**  | outgoing  | Delete a previous learned fingerprint       |
+| /fingerprint/[gate]/**status**  | incoming  | Current sensor status and messages          |
 
 For example, if gate is "main":
 
 <img src="doc/ha-mqtt.png" width="400">
 
+### Learn
+
+To initiate a learning process, send this message to the learing topic:
+
+```
+{
+  "fingerPrintId": [number]
+}
+```
+
+Where [number] is the fingerprint identification number, from 10 to 200. Suggested convention is to use intervals of 10 id's to match users. So, user 1 will have fingerprint id's from 10 to 19, user 2 from 20 to 29 and so on. Internally, a division by 10 will be done, so user calculation will be ready made.
+
+The process require a fingerprint snapshot and than a match. So, the steps will be:
+
+* Wait for purple led flashing
+* Put the finger on the sensor
+* Wait until led turns off
+* Remove finger
+* Wait for purple led flashing again
+* Put same finger on the sensor
+* Wait until led turns off
+* Remove finger
+* If successful, a three times blue flash will confirm
+
+To programmatically follow the learning process read the *status* topic messages.
+
+### Status
+
+Status topic will be used to both inform user about learning/deleting process and current fingerprint matching status.
+
+At idle, sensor will continuosly look for a fingerprint. Result will be reported in a message like:
+
+```
+{
+    "message": "Waiting...",
+    "state": "wait",
+    "mode": "reading",
+    "match": false,
+    "fingerprintId": 0,
+    "userId": 0,
+    "confidence": 0,
+    "gate": "main"
+}
+```
+
+| Field         | Purpose                                                     |
+|---------------|-------------------------------------------------------------|
+| message       | Human readable message, useful when learning                |
+| state         | Current sensor state, see below for values                  |
+| mode          | If the sensor is reading, learning or deleting              |
+| match         | True if a fingerprit has been recognized                    |
+| fingerprintId | The recognized fingerprint                                  |
+| userId        | The calculated userId, based on fingerprintId/10 convention |
+| confidence    | How much the recognition is reliable                        |
+| gate          | Current configured gate name                                |
+
+
+State field can be:
+
+* error: something is not working
+* wrong: a wrong fingerprint has be detected, can be used as alarm trigger
+* match: a recognized fingerprint has been detected
+* wait: fingerprint sensor is waiting for a finger
 
