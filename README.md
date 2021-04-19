@@ -113,6 +113,8 @@ Topics must include the given *gate* name, following this table:
 | /fingerprint/[gate]/**learn**   | outgoing  | Start the learning new fingerprint process  |
 | /fingerprint/[gate]/**delete**  | outgoing  | Delete a previous learned fingerprint       |
 
+For example, if gate is "main":
+
 <img src="doc/ha-mqtt.png" width="400">
 
 
