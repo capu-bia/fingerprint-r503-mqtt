@@ -6,7 +6,7 @@ This a firmware for arduino like devices with integrated WIFI adapter, based on 
 
 Connect one of these board to a [R503 Fingerprint capacitive sensor](https://amzn.to/31WWdd6) and you can send commands via MQTT protocol to an IoT hub.
 
-This project is made with Home Assistant integration in mind, but it can be used to only interact with any MQTT broker.
+This project is made with [Home Assistant](https://www.home-assistant.io/) integration in mind, but it can be used to only interact with any MQTT broker.
 
 ## Features
 * Simple configuration via WIFI
@@ -27,13 +27,13 @@ Home Assistant can use messages to enable automations and trigger things like:
 
 ### Hardware
 
-1. Home Assistant with MQTT broker running (or another MQTT broker running on your LAN)
+1. [Home Assistant](https://www.home-assistant.io/) with MQTT broker running (or another MQTT broker running on your LAN)
 2. A fingerprint sensor model [R503](https://amzn.to/31WWdd6)
 3. An ESP8266 board like the [Wemos D1 mini](https://amzn.to/3fP5Pir)
 
 ### Software
 
-Interaction will be done sending/receiving MQTT messages to a borker. Most used broker is called Mosquitto and can be installed as Home Assistant integration.
+Interaction will be done sending/receiving MQTT messages to a borker. Most used broker is called [Mosquitto](https://mosquitto.org/) and can be installed as [Home Assistant integration](https://www.home-assistant.io/integrations/mqtt/).
 
 ## How to
 
@@ -98,7 +98,7 @@ NB: reset will *NOT* reset any registered fingerprints on the sensor.
 
 ## Integration
 
-Everything will be controlled sending and receiving MQTT messages. If you are using Home Assistant you can both send and receive messages in:
+Everything will be controlled sending and receiving MQTT messages. If you are using [Home Assistant](https://www.home-assistant.io/) you can both send and receive messages in:
 
 **Configuration -> Integration -> MQTT - CONFIGURE**
 
@@ -109,9 +109,9 @@ Topics must include the given *gate* name, following this table:
 
 | Topic                           | Direction | Purpose                                     |
 |---------------------------------|-----------|---------------------------------------------|
-| /fingerprint/[gate]/**learn**   | outgoing  | Start the learning new fingerprint process  |
-| /fingerprint/[gate]/**delete**  | outgoing  | Delete a previous learned fingerprint       |
-| /fingerprint/[gate]/**status**  | incoming  | Current sensor status and messages          |
+| /fingerprint/*gate*/**learn**   | outgoing  | Start the learning new fingerprint process  |
+| /fingerprint/*gate*/**delete**  | outgoing  | Delete a previous learned fingerprint       |
+| /fingerprint/*gate*/**status**  | incoming  | Current sensor status and messages          |
 
 For example, if gate is "main":
 
@@ -119,15 +119,15 @@ For example, if gate is "main":
 
 ### Learn
 
-To initiate a learning process, send this message to the learing topic:
+To initiate a learning process, send this message to the learn topic:
 
 ```
 {
-  "fingerPrintId": [number]
+  "fingerPrintId": *number*
 }
 ```
 
-Where [number] is the fingerprint identification number, from 10 to 200. Suggested convention is to use intervals of 10 id's to match users. So, user 1 will have fingerprint id's from 10 to 19, user 2 from 20 to 29 and so on. Internally, a division by 10 will be done, so user calculation will be ready made.
+Where *number* is the fingerprint identification number, from 10 to 200. Suggested convention is to use intervals of 10 id's to match users. So, user 1 will have fingerprint id's from 10 to 19, user 2 from 20 to 29 and so on. Internally, a division by 10 will be done, so user calculation will be ready made.
 
 The process require a fingerprint snapshot and than a match. So, the steps will be:
 
@@ -210,3 +210,21 @@ A fingerprint has been detected but not recognized. An unknow hand to the sensor
     "gate": "main"
 }
 ```
+
+### Delete
+
+To delete a fingerprint, send this message to the delete topic:
+
+```
+{
+  "fingerPrintId": *number*
+}
+```
+
+Where *number* is the fingerprint identification number to delete. Resetting device will not delete fingerprint because images are stored the sensor itself and not in the ESP firmware.
+
+## Suggestion and contributions
+
+If you have suggestions or ideas, please use [Issues](https://github.com/vinz486/fingerprint-r503-mqtt/issues) tab to contact me.
+
+
