@@ -223,8 +223,8 @@ To delete a fingerprint, send this message to the delete topic:
 
 Where *number* is the fingerprint identification number to delete. Resetting device will not delete fingerprint because images are stored the sensor itself and not in the ESP firmware.
 
-## Suggestion and contributions
+## Suggestions and contributions
 
-If you have suggestions or ideas, please use [Issues](https://github.com/vinz486/fingerprint-r503-mqtt/issues) tab to contact me.
+If you have suggestions or ideas, please use [issues](https://github.com/vinz486/fingerprint-r503-mqtt/issues) tab to contact me.
 
 
