@@ -98,7 +98,7 @@ NB: reset will *NOT* reset any registered fingerprints on the sensor.
 
 ## Integration
 
-Everything will be controlled sending and receiving MQTT messages. If you are using Home Assistant you can both send and receive messages in
+Everything will be controlled sending and receiving MQTT messages. If you are using Home Assistant you can both send and receive messages in:
 
 **Configuration -> Integration -> MQTT - CONFIGURE**
 
@@ -112,7 +112,6 @@ Topics must include the given *gate* name, following this table:
 | /fingerprint/[gate]/**status**  | incoming  | Current sensor status and messages          |
 | /fingerprint/[gate]/**learn**   | outgoing  | Start the learning new fingerprint process  |
 | /fingerprint/[gate]/**delete**  | outgoing  | Delete a previous learned fingerprint       |
-|-------------------------------------------------------------------------------------------|
 
 <img src="doc/ha-mqtt.png" width="400">
 
