@@ -21,10 +21,10 @@ char learnTopic[32];
 char deleteTopic[32];
 
 String lastMessage = "";
-String sensorMode = "reading";
+String sensorMode = MODE_READING;
 String lastSensorMode = "";
 
-String sensorState = "waiting";
+String sensorState = STATE_WAIT;
 String lastSensorState = "";
 
 bool match = false;
