@@ -177,7 +177,7 @@ At idle, sensor will continuosly look for a fingerprint. Result will be reported
 State field can be:
 
 * error: something is not working
-* wrong: a wrong fingerprint has be detected, can be used as alarm trigger
+* wrong: a wrong fingerprint has been detected, can be used as alarm trigger
 * match: a recognized fingerprint has been detected
 * wait: fingerprint sensor is waiting for a finger
 
