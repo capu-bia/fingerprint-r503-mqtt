@@ -123,7 +123,7 @@ To initiate a learning process, send this message to the learn topic:
 
 ```
 {
-  "fingerPrintId": *number*
+  "fingerprintId": *number*
 }
 ```
 
@@ -217,7 +217,7 @@ To delete a fingerprint, send this message to the delete topic:
 
 ```
 {
-  "fingerPrintId": *number*
+  "fingerprintId": *number*
 }
 ```
 
