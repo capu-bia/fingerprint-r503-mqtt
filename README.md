@@ -86,7 +86,7 @@ After saving, Wemos will reboot and will try to connect to WiFi network. On succ
 
 If you mistyped some data or you want to reset device, do:
 
-* tun on device
+* turn on device
 * wait 10 seconds
 * press the reset button
 * wait 5 seconds
