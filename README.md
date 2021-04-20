@@ -33,7 +33,7 @@ Home Assistant can use messages to enable automations and trigger things like:
 
 ### Software
 
-Interaction will be done sending/receiving MQTT messages to a borker. Most used broker is called [Mosquitto](https://mosquitto.org/) and can be installed as [Home Assistant integration](https://www.home-assistant.io/integrations/mqtt/).
+Interaction will be done sending/receiving MQTT messages to a broker. Most used broker is called [Mosquitto](https://mosquitto.org/) and can be installed as [Home Assistant integration](https://www.home-assistant.io/integrations/mqtt/).
 
 ## How to
 
