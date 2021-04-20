@@ -58,7 +58,7 @@ Connect the Wemos to a usb port and:
 
 ### Configure
 
-After flash and reboot, when no configuration is found the Wemos will tun on a WiFi network called "Fingerprint-Setup":
+After flash and reboot, when no configuration is found the Wemos will turn on a WiFi network called "Fingerprint-Setup":
 
 <img src="doc/wifi-ap.png" width="350">
 
