@@ -49,12 +49,12 @@ The other 2 sensor cables can be left unused.
 
 ### Flash
 
-This project is not made using standard Arduino IDE. It's a PlatformIO project.
+This project is not made using standard Arduino IDE. It's a [PlatformIO](https://platformio.org/) project.
 
 Connect the Wemos to a usb port and:
 
 * Linux (and maybe Mac): type `$ ./install_into_usb_connected_wemos_d1.sh` (python3 and curl are needed)
-* Windows: I don't know. Follow PlatformIO docs to flash under Windows machines.
+* Windows: I don't know. Follow [PlatformIO docs](https://docs.platformio.org/en/latest/core/installation.html) to flash under Windows machines.
 
 ### Configure
 
