@@ -2,9 +2,9 @@
 
 ## What is this?
 
-This a firmware for arduino like devices with integrated WIFI adapter, based on ESP8266 board, like the [Wemos D1 Mini](https://amzn.to/3fP5Pir).
+This is a firmware for arduino-like devices with integrated WIFI adapter, based on ESP8266 board, like the [Wemos D1 Mini](https://amzn.to/3fP5Pir).
 
-Connect one of these board to a [R503 Fingerprint capacitive sensor](https://amzn.to/31WWdd6) and you can send commands via MQTT protocol to an IoT hub.
+Connect one of these boards to a [R503 Fingerprint capacitive sensor](https://amzn.to/31WWdd6) and you can send commands via MQTT protocol to an IoT hub.
 
 This project is made with [Home Assistant](https://www.home-assistant.io/) integration in mind, but it can be used to only interact with any MQTT broker.
 
@@ -14,14 +14,13 @@ This project is made with [Home Assistant](https://www.home-assistant.io/) integ
 * Detect fingerprint mismatch
 * Add and delete fingerprints via MQTT
 * Led color code feedback
-* Led signalling via MQTT
 
 Home Assistant can use messages to enable automations and trigger things like:
 
 * Open a door using electric locks
 * Enable/disable alarm system using different fingerprints
 * Enable/disable access based on user and/or time
-* Activate notificatons on unknown fingerprint
+* Activate notifications on unknown fingerprint
 
 ## What do you need?
 
@@ -80,7 +79,7 @@ NB: do NOT use any special chars in the gate name field: only letters and number
 
 <img src="doc/wifi-config.png" width="350">
 
-After saving, Wemos will reboot and will try to connect to WiFi network. On successful, it will flash blue led on sensor.
+After saving, Wemos will reboot and will try to connect to the WiFi network. On success, it will flash blue led on the sensor.
 
 ### Reset
 
@@ -92,17 +91,17 @@ If you mistyped some data or you want to reset device, do:
 * wait 5 seconds
 * press again reset button
 
-Device will reboot in config mode and Fingerprint-Setup WiFi network will come back again.
+The device will reboot in config mode and Fingerprint-Setup WiFi network will come back again.
 
 NB: reset will *NOT* reset any registered fingerprints on the sensor.
 
 ## Integration
 
-Everything will be controlled sending and receiving MQTT messages. If you are using [Home Assistant](https://www.home-assistant.io/) you can both send and receive messages in:
+Everything will be controlled by sending and receiving MQTT messages. If you are using [Home Assistant](https://www.home-assistant.io/) you can both send and receive messages in:
 
 **Configuration -> Integration -> MQTT - CONFIGURE**
 
-Then you can set topic to send to json messages, and topic to listen to for incoming messages.
+Then you can set a topic to send to json messages, and a topic to listen to for incoming messages.
 
 Topics must include the given *gate* name, following this table:
 
@@ -127,9 +126,9 @@ To initiate a learning process, send this message to the learn topic:
 }
 ```
 
-Where *number* is the fingerprint identification number, from 10 to 200. Suggested convention is to use intervals of 10 id's to match users. So, user 1 will have fingerprint id's from 10 to 19, user 2 from 20 to 29 and so on. Internally, a division by 10 will be done, so user calculation will be ready made.
+Where *number* is the fingerprint identification number, from 10 to 200. Suggested convention is to use intervals of 10 id's to match users. So, user 1 will have a fingerprint id from 10 to 19, user 2 from 20 to 29 and so on. Internally, a division by 10 will be done, so user calculation will be ready made.
 
-The process require a fingerprint snapshot and than a match. So, the steps will be:
+The process requires a fingerprint snapshot and then a match. So, the steps will be:
 
 * Wait for purple led flashing
 * Put the finger on the sensor
@@ -145,9 +144,9 @@ To programmatically follow the learning process read the *status* topic messages
 
 ### Status
 
-Status topic will be used to both inform user about learning/deleting process and current fingerprint matching status.
+Status topic will be used to both inform the user about the learning/deleting process and current fingerprint matching status.
 
-At idle, sensor will continuosly look for a fingerprint. Result will be reported in a message like:
+At idle, the sensor will continuously look for a fingerprint. Result will be reported in a message like:
 
 ```
 {
@@ -196,7 +195,7 @@ Example, a matching message (slow blue led feedback):
 }
 ```
 
-A fingerprint has been detected but not recognized. An unknow hand to the sensor (red flashing led feedback):
+A fingerprint has been detected but not recognized. An unknown hand to the sensor (red flashing led feedback):
 
 ```
 {
@@ -221,10 +220,14 @@ To delete a fingerprint, send this message to the delete topic:
 }
 ```
 
-Where *number* is the fingerprint identification number to delete. Resetting device will not delete fingerprint because images are stored the sensor itself and not in the ESP firmware.
+Where *number* is the fingerprint identification number to delete. Resetting the device will not delete fingerprints because images are stored in the sensor itself and not in the ESP firmware.
 
 ## Suggestions and contributions
 
 If you have suggestions or ideas, please use [issues](https://github.com/vinz486/fingerprint-r503-mqtt/issues) tab to contact me.
 
+### Led signalling
 
+Onboard blue led will signal when connection to MQTT broker is established: solid when connected, blink when connecting. Signalling is referred to MQTT, so even if network connection is ok but MQTT is broken the led will blink.
+
+Also, every time the MQTT client connects to the broker the feedback led on the sensor will flash in blue.
