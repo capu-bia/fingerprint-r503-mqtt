@@ -222,12 +222,13 @@ To delete a fingerprint, send this message to the delete topic:
 
 Where *number* is the fingerprint identification number to delete. Resetting the device will not delete fingerprints because images are stored in the sensor itself and not in the ESP firmware.
 
-## Suggestions and contributions
-
-If you have suggestions or ideas, please use [issues](https://github.com/vinz486/fingerprint-r503-mqtt/issues) tab to contact me.
-
-### Led signalling
+## Led signalling
 
 Onboard blue led will signal when connection to MQTT broker is established: solid when connected, blink when connecting. Signalling is referred to MQTT, so even if network connection is ok but MQTT is broken the led will blink.
 
 Also, every time the MQTT client connects to the broker the feedback led on the sensor will flash in blue.
+
+## Suggestions and contributions
+
+If you have suggestions or ideas, please use [issues](https://github.com/vinz486/fingerprint-r503-mqtt/issues) tab to contact me.
+
