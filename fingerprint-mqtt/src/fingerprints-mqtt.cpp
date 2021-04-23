@@ -64,6 +64,8 @@ uint8_t fingerprintReading()
     return RESULT_WAIT;
   }
 
+  boardLedOff();
+
   result = fingerSensor.image2Tz();
 
   if (result != FINGERPRINT_OK)
