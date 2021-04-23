@@ -12,3 +12,11 @@
 #define LED_SNAP 5
 
 void led(uint8_t mode);
+void boardLedLoop();
+
+void boardLedSetBlink();
+void boardLedSetSolid();
+
+void boardLedOn();
+void boardLedOff();
+

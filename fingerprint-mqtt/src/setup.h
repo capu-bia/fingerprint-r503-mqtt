@@ -11,6 +11,9 @@
 #define STATE_MATCH "match"
 #define STATE_WAIT "wait"
 
+#define DELAY_CONNECT 0
+#define DELAY_BOARDLED 1
+
 #define MQTT_MAX_PACKET_SIZE 256
 #define MQTT_INTERVAL 500
 #define SENSOR_TX 12 // gren D5
@@ -50,3 +53,5 @@ void resetMessage();
 
 void setupDevices();
 void setupTouch();
+
+boolean loopDelay(int key, unsigned long delay);

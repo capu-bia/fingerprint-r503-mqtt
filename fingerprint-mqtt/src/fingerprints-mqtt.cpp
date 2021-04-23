@@ -16,8 +16,6 @@ void setup()
   setupWifi();
   saveConfig();
   mqttSetup(callback);
-
-  led(LED_READY);
 }
 
 void loop()
@@ -103,6 +101,7 @@ uint8_t fingerprintReading()
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
+  boardLedOff();
 
   DynamicJsonDocument body(1024);
   deserializeJson(body, payload);

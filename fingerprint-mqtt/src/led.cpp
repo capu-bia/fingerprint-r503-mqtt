@@ -1,6 +1,60 @@
 #include "led.h"
 #include "setup.h"
 
+boolean boardLedIsOn = false;
+boolean boardLedBlinkMode = false;
+
+void boardLedOn()
+{
+    digitalWrite(LED_BUILTIN, LOW);
+    boardLedIsOn = true;
+}
+
+void boardLedOff()
+{
+    digitalWrite(LED_BUILTIN, HIGH);
+    boardLedIsOn = false;
+}
+
+void boardLedBlinkLoop()
+{
+    if (!loopDelay(DELAY_BOARDLED, 250))
+    {
+        return;
+    }
+
+    if (boardLedIsOn)
+    {
+        boardLedOff();
+    }
+    else
+    {
+        boardLedOn();
+    }
+}
+
+void boardLedLoop()
+{
+    if (boardLedBlinkMode)
+    {
+        boardLedBlinkLoop();
+    }
+    else
+    {
+        boardLedOn();
+    }
+}
+
+void boardLedSetBlink()
+{
+    boardLedBlinkMode = true;
+}
+
+void boardLedSetSolid()
+{
+    boardLedBlinkMode = false;
+}
+
 void led(uint8_t mode)
 {
     switch (mode)

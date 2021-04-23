@@ -1,6 +1,7 @@
 #define ESP_DRD_USE_LITTLEFS true
 
 #include "setup.h"
+#include "led.h"
 #include "config.h"
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
@@ -45,6 +46,26 @@ char deviceGateId[32] = "main";
 
 DoubleResetDetector resetDetector(DRD_TIMEOUT, DRD_ADDRESS);
 
+unsigned long key_connect = 0;
+unsigned long key_boardled = 0;
+
+boolean loopDelay(int key, unsigned long delay)
+{
+    if (key == DELAY_CONNECT && millis() - key_connect > delay)
+    {
+        key_connect = millis();
+        return true;
+    }
+
+    if (key == DELAY_BOARDLED && millis() - key_boardled > delay)
+    {
+        key_boardled = millis();
+        return true;
+    }
+
+    return false;
+}
+
 void resetMessage()
 {
     sensorState = STATE_WAIT;
@@ -56,40 +77,44 @@ void resetMessage()
 
 void mqttPublish(String message)
 {
-    if ((message != lastMessage) ||
-        (sensorMode != lastSensorMode) ||
-        (sensorState != lastSensorState))
+    if ((message == lastMessage) &&
+        (sensorMode == lastSensorMode) &&
+        (sensorState == lastSensorState))
     {
-        String topic;
-
-        topic = "/fingerprint/";
-        topic.concat(deviceGateId);
-        topic.concat("/status");
-        char statusTopic[topic.length() + 1];
-        topic.toCharArray(statusTopic, topic.length() + 1);
-
-        lastMessage = message;
-        lastSensorMode = sensorMode;
-        lastSensorState = sensorState;
-
-        DynamicJsonDocument mqttMessage(MQTT_MAX_PACKET_SIZE);
-
-        mqttMessage["message"] = message;
-        mqttMessage["state"] = sensorState;
-        mqttMessage["mode"] = sensorMode;
-        mqttMessage["match"] = match;
-        mqttMessage["fingerprintId"] = fingerprintId;
-        mqttMessage["userId"] = fingerprintId / 10;
-        mqttMessage["confidence"] = confidence;
-        mqttMessage["gate"] = deviceGateId;
-
-        Serial.print("Message: ");
-        Serial.println(message);
-
-        size_t mqttMessageSize = serializeJson(mqttMessage, mqttBuffer);
-        client.publish(statusTopic, mqttBuffer, mqttMessageSize);
-        Serial.println(mqttBuffer);
+        return;
     }
+
+    boardLedOff();
+
+    String topic;
+
+    topic = "/fingerprint/";
+    topic.concat(deviceGateId);
+    topic.concat("/status");
+    char statusTopic[topic.length() + 1];
+    topic.toCharArray(statusTopic, topic.length() + 1);
+
+    lastMessage = message;
+    lastSensorMode = sensorMode;
+    lastSensorState = sensorState;
+
+    DynamicJsonDocument mqttMessage(MQTT_MAX_PACKET_SIZE);
+
+    mqttMessage["message"] = message;
+    mqttMessage["state"] = sensorState;
+    mqttMessage["mode"] = sensorMode;
+    mqttMessage["match"] = match;
+    mqttMessage["fingerprintId"] = fingerprintId;
+    mqttMessage["userId"] = fingerprintId / 10;
+    mqttMessage["confidence"] = confidence;
+    mqttMessage["gate"] = deviceGateId;
+
+    Serial.print("Message: ");
+    Serial.println(message);
+
+    size_t mqttMessageSize = serializeJson(mqttMessage, mqttBuffer);
+    client.publish(statusTopic, mqttBuffer, mqttMessageSize);
+    Serial.println(mqttBuffer);
 }
 
 void setupDevices()
@@ -103,6 +128,7 @@ void setupDevices()
     Serial.println("\n\nWelcome to Fingerprint-MQTT sensor");
 
     pinMode(LED_BUILTIN, OUTPUT);
+    boardLedSetBlink();
 
     if (resetDetector.detectDoubleReset())
     {
@@ -172,10 +198,12 @@ void setupDevices()
     //attachInterrupt(digitalPinToInterrupt(SENSOR_TOUCH), setupTouch, CHANGE);
 }
 
+/*
 ICACHE_RAM_ATTR void setupTouch()
 {
     Serial.println("Touch!");
 }
+*/
 
 void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length))
 {
@@ -187,9 +215,8 @@ void mqttSetup(void (*callback)(char *topic, byte *payload, unsigned int length)
 
 void mqttConnect()
 {
-    while (!client.connected())
+    if (!client.connected() && loopDelay(DELAY_CONNECT, 5000))
     {
-
         String topic;
 
         topic = "/fingerprint/";
@@ -227,20 +254,22 @@ void mqttConnect()
             client.publish(availableTopic, "online");
             client.subscribe(learnTopic);
             client.subscribe(deleteTopic);
+
+            led(LED_READY);
         }
         else
         {
             Serial.print("failed, rc: ");
             Serial.print(client.state());
-            Serial.println(" try again in 5 seconds");
-
-            delay(5000);
+            Serial.println(" waiting for retry.");
         }
     }
 }
 
 void localLoop()
 {
+    boardLedLoop();
+
     resetDetector.loop();
 
     mqttConnect();
@@ -248,4 +277,13 @@ void localLoop()
     delay(200);
 
     client.loop();
+
+    if (client.state() == MQTT_CONNECTED)
+    {
+        boardLedSetSolid();
+    }
+    else
+    {
+        boardLedSetBlink();
+    }
 }
