@@ -81,20 +81,6 @@ NB: do NOT use any special chars in the gate name field: only letters and number
 
 After saving, Wemos will reboot and will try to connect to the WiFi network. On success, it will flash blue led on the sensor.
 
-### Reset
-
-If you mistyped some data or you want to reset device, do:
-
-* turn on device
-* wait 10 seconds
-* press the reset button
-* wait 5 seconds
-* press again reset button
-
-The device will reboot in config mode and Fingerprint-Setup WiFi network will come back again.
-
-NB: reset will *NOT* reset any registered fingerprints on the sensor.
-
 ## Integration
 
 Everything will be controlled by sending and receiving MQTT messages. If you are using [Home Assistant](https://www.home-assistant.io/) you can both send and receive messages in:
@@ -227,6 +213,20 @@ Where *number* is the fingerprint identification number to delete. Resetting the
 Onboard blue led will signal when connection to MQTT broker is established: solid when connected, blink when connecting. Signalling is referred to MQTT, so even if network connection is ok but MQTT is broken the led will blink.
 
 Also, every time the MQTT client connects to the broker the feedback led on the sensor will flash in blue.
+
+### Reset
+
+If you mistyped config data or you want to reset device, do:
+
+* turn on device
+* wait 10 seconds
+* press the reset button
+* wait 5 seconds
+* press again reset button
+
+The device will reboot in config mode and Fingerprint-Setup WiFi network will come back again.
+
+NB: reset will *NOT* reset any registered fingerprints on the sensor.
 
 ## Suggestions and contributions
 
