@@ -232,7 +232,7 @@ NB: reset will *NOT* reset any registered fingerprints on the sensor.
 
 Some configuration examples for Home Assistant. You need to edit the "configuration.yaml" file inside HA filesystem. See [official tutorial](https://www.home-assistant.io/getting-started/configuration/).
 
-### Simple match: know when any fingerprint is detected
+### Simple match: detct when any fingerprint is recognized
 
 NB: change "main" in ```state_topic``` to match your gate name.
 
@@ -248,7 +248,7 @@ binary_sensor:
 
 This is a "binary_sensor", eg. a two position element such as a switch, that turns on when any registered fingerprint is detected.
 
-### Unknown detection: detect when an unknown fingerprint is detected
+### Unknown detection: detect when an unknown fingerprint is not recognized
 
 NB: change "main" in ```state_topic``` to match your gate name.
 
@@ -264,7 +264,7 @@ binary_sensor:
 
 This is a "binary_sensor", eg. a two position element such as a switch, that turns on when an unknown fingerprint is detected.
 
-### User detection: detect when a specified user fingerprint is detected
+### Specific user: detect when any fingerprint of a specific user is recognized
 
 NB: change "main" in ```state_topic``` to match your gate name.
 
@@ -278,7 +278,7 @@ binary_sensor:
 
 This is a "binary_sensor", eg. a two position element such as a switch, that turns on when any fingerprint of user with id 1 is detected.
 
-### Fingerprint detection: detect when a specific fingerprint from a specific user is detected
+### Specific user's fingerprint: detect when a specific fingerprint from a specific user is recognized
 
 NB: change "main" in ```state_topic``` to match your gate name.
 
