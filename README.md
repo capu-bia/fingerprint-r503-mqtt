@@ -6,7 +6,7 @@ This is a firmware for arduino-like devices with integrated WIFI adapter, based 
 
 Connect one of these boards to a [R503 Fingerprint capacitive sensor](https://amzn.to/31WWdd6) and you can send commands via MQTT protocol to an IoT hub.
 
-This project is made with [Home Assistant](https://www.home-assistant.io/) integration in mind, but it can be used to only interact with any MQTT broker.
+This project is made with [Home Assistant](https://www.home-assistant.io/) integration in mind, but it can be used to only interact with any MQTT broker (see below for some HA integration examples).
 
 ## Features
 * Simple configuration via WIFI
@@ -214,7 +214,7 @@ Onboard blue led will signal when connection to MQTT broker is established: soli
 
 Also, every time the MQTT client connects to the broker the feedback led on the sensor will flash in blue.
 
-### Reset
+## Reset
 
 If you mistyped config data or you want to reset device, do:
 
@@ -228,7 +228,71 @@ The device will reboot in config mode and Fingerprint-Setup WiFi network will co
 
 NB: reset will *NOT* reset any registered fingerprints on the sensor.
 
+## Home Assistant integration via MQTT
+
+Some configuration examples for Home Assistant. You need to edit the "configuration.yaml" file inside HA filesystem. See [official tutorial](https://www.home-assistant.io/getting-started/configuration/).
+
+### Simple match: know when any fingerprint is detected
+
+NB: change "main" in ```state_topic``` to match your gate name.
+
+```
+binary_sensor:
+  - platform: mqtt
+    name: "FingerprintOK"
+    state_topic: "/fingerprint/main/status"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ value_json.match }}"
+```
+
+This is a "binary_sensor", eg. a two position element such as a switch, that turns on when any registered fingerprint is detected.
+
+### Unknown detection: detect when an unknown fingerprint is detected
+
+NB: change "main" in ```state_topic``` to match your gate name.
+
+```
+binary_sensor:
+  - platform: mqtt
+    name: "TriggerAlarm"
+    state_topic: "/fingerprint/main/status"
+    payload_on: "wrong"
+    payload_off: "wait"
+    value_template: "{{ value_json.state }}"
+```
+
+This is a "binary_sensor", eg. a two position element such as a switch, that turns on when an unknown fingerprint is detected.
+
+### User detection: detect when a specified user fingerprint is detected
+
+NB: change "main" in ```state_topic``` to match your gate name.
+
+```
+binary_sensor:
+  - platform: mqtt
+    name: "OpenTheDoor"
+    state_topic: "/fingerprint/main/status"
+    value_template: "{% if finger.match and finger.userId | int == 1 %}ON{% else %}OFF{% endif %}"
+```
+
+This is a "binary_sensor", eg. a two position element such as a switch, that turns on when any fingerprint of user with id 1 is detected.
+
+### Fingerprint detection: detect when a specific fingerprint from a specific user is detected
+
+NB: change "main" in ```state_topic``` to match your gate name.
+
+```
+binary_sensor:
+  - platform: mqtt
+    name: "ActivateAlarm"
+    state_topic: "/fingerprint/main/status"
+    value_template: "{% if finger.match and finger.userId | int == 1 and finger.fingerprintId | int == 15 %}ON{% else %}OFF{% endif %}"
+```
+
+This is a "binary_sensor", eg. a two position element such as a switch, that turns on when any fingerprint of user with id 1 is detected.
+
+
 ## Suggestions and contributions
 
 If you have suggestions or ideas, please use [issues](https://github.com/vinz486/fingerprint-r503-mqtt/issues) tab to contact me.
-
