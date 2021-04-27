@@ -62,7 +62,7 @@ void led(uint8_t mode)
     case LED_SNAP:
         fingerSensor.LEDcontrol(
             FINGERPRINT_LED_FLASHING,
-            100,
+            50,
             FINGERPRINT_LED_PURPLE,
             1);
 
