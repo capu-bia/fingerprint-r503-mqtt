@@ -287,10 +287,10 @@ binary_sensor:
   - platform: mqtt
     name: "ActivateAlarm"
     state_topic: "/fingerprint/main/status"
-    value_template: "{% if finger.match and finger.userId | int == 1 and finger.fingerprintId | int == 15 %}ON{% else %}OFF{% endif %}"
+    value_template: "{% if finger.match and finger.fingerprintId | int == 15 %}ON{% else %}OFF{% endif %}"
 ```
 
-This is a "binary_sensor", eg. a two position element such as a switch, that turns on when any fingerprint of user with id 1 is detected.
+This is a "binary_sensor", eg. a two position element such as a switch, that turns on when a specifig fingerprint, the 5th, of user with id 1 is detected.
 
 
 ## Suggestions and contributions
