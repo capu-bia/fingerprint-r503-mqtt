@@ -1,5 +1,7 @@
 # Fingerprint - R503
 
+all credits to vinz486 -> https://github.com/vinz486/fingerprint-r503-mqtt
+
 ## What is this?
 
 This is a firmware for arduino-like devices with integrated WIFI adapter, based on ESP8266 board, like the [Wemos D1 Mini](https://amzn.to/3fP5Pir).
